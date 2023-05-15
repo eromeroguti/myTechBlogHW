@@ -1,25 +1,30 @@
 const router = require('express').Router();
 const {User} = require('../../models');
 
-router.get('/users', async (req, res) => {
+// /home routes to the home page
+router.get('/home', async (req, res) => {
     try {
-        const userData = await User.findAll();
-        const users = userData.map((user) => user.get({plain: true}));
-        res.render('users', {users});
-    } catch (err) {
-        res.status(500).json(err);
+      res.render('home', {});
+    } catch (error) {
+      res.status(500).json({error});
     }
+  });
+// /signin routes to the sign-in page
+router.get('/signin', async (req, res) => {
+  try {
+    res.render('signin', {});
+  } catch (error) {
+    res.status(500).json({error});
+  }
+  });
+
+// /signup routes to the sign-up page
+router.get('/signup', async (req, res) => {
+  try {
+    res.render('signup', {});
+  } catch (error) {
+    res.status(500).json({error});
+  }
 });
 
-router.post('/users/:userId', async (req, res) => {
-    try {
-        const {userId} = req.params;
-        const userData = await User.create(req.body);
-        res.status(200).json(userData);
-
-        res.render('user_profile', {userData});
-    } catch (err) {
-        res.status(500).json(err);
-    }
-});
 module.exports = router;

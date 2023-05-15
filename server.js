@@ -5,12 +5,12 @@ const routes = require('./routes');
 const exphbs = require('express-handlebars');
 const session = require('express-session');
 const sequelize = require('./config/connection');
-const helpers = require('./utils/helpers');
+// const helpers = require('./utils/helpers');
 
 dotenv.config();
 
 const hbs = exphbs.create({
-  helpers,
+  // helpers
 });
 
 const app = express();

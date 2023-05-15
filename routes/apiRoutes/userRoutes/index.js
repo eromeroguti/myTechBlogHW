@@ -1,30 +1,37 @@
 const router = require('express').Router();
-const {User} = require('../../../models'); 
+const bcrypt = require('bcrypt');
+const {User} = require('../../../models');
 
-router.get('/singup', async (req, res) => {
+
+router.post('/signup', async (req, res) => {
     try {
-        const userData = await User.create(req.body);
-        req.session.save(() => {
-            req.session.user_id = userData.id;
-            if (req.session.user_id) {
-                res.redirect('/dashboard');
-            } else {
-                res.status(400).json({message: 'No user with this id!'});
-                return;
-            }
-            res.redirect('/dashboard');
-        });
-    } catch (err) {
-        res.status(500).json(err);
+      const { username, password } = req.body;
+  
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+  
+      // Create a new user with the hashed password
+      const user = await User.create({
+        username,
+        password: hashedPassword
+      });
+  
+      req.session.save(() => {
+        req.session.user = user.get({ plain: true });
+        req.session.loggedIn = true;
+        req.session.visitCount++;
+        res.redirect('/users');
+      });
+  
+    } catch (error) {
+      res.status(500).json(error);
     }
-});
+  });
 
-
-router.post('/logout', (req, res) => {
+router.post('/logout', async (req, res) => {
     req.session.destroy(() => {
         res.json({message: 'You are now logged out!'});
     });
 });
-
 
 module.exports = router;
